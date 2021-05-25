@@ -20,14 +20,16 @@ bot.on('message', (msg) => {
 });
 
 function sendWeather(weather){
-    for (let i = 0, p = Promise.resolve(); i < usersId.length; i++) {
-        p = p.then(_ => new Promise(resolve =>
-            setTimeout(function () {
-                bot.sendMessage(usersId[i], `Weather in ${weather}`);
-                resolve();
-            }, 500)
-        ));
-    }
+    [...usersId].reduce( (accumulatorPromise, nextID) => {
+        return accumulatorPromise.then(() => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                  bot.sendMessage(nextID, `Weather in ${weather}`);  
+                  resolve();
+                }, 500);
+            });
+        });
+    }, Promise.resolve());
 }
 
 function handleAnswer(city){
